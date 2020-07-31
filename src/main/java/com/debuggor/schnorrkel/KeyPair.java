@@ -6,6 +6,8 @@ import cafe.cryptography.curve25519.RistrettoGeneratorTable;
 import cafe.cryptography.curve25519.Scalar;
 import com.debuggor.utils.HexUtils;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 
 /**
@@ -48,6 +50,12 @@ public class KeyPair {
     }
 
     public byte[] sign(byte[] data) {
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-512");
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+
         return null;
     }
 

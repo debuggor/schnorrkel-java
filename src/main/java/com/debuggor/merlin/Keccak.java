@@ -118,5 +118,8 @@ public class Keccak {
         longs[2] = 12846L;
         Keccak.f1600(longs);
         System.out.println(longs);
+
+        // todo 将long转为8位byte
+
     }
 }
