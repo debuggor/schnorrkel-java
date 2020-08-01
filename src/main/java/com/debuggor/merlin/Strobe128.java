@@ -2,6 +2,8 @@ package com.debuggor.merlin;
 
 import com.debuggor.utils.NumberUtils;
 
+import java.util.Arrays;
+
 /**
  * @Author:yong.huang
  * @Date:2020-07-31 17:23
@@ -29,88 +31,63 @@ public class Strobe128 {
         this.cur_flags = 0;
     }
 
-
-    public static Strobe128 createStrobe(byte[] protocol) {
+    public static Strobe128 createStrobe(byte[] protocol) throws Exception {
         byte[] state = initial_state(128);
-        Strobe128 strobe128 = new Strobe128(state);
-
-
-        return strobe128;
+        Strobe128 strobe = new Strobe128(state);
+        strobe.meta_ad(protocol, false);
+        return strobe;
     }
 
-    /**
-     * pub fn meta_ad(&mut self, data: &[u8], more: bool) {
-     * self.begin_op(FLAG_M | FLAG_A, more);
-     * self.absorb(data);
-     * }
-     */
-    private void meta_ad(byte[] data, boolean more) {
-        begin_op(FLAG_M | FLAG_A, more);
-        absorb(data);
+    public void meta_ad(byte[] data, boolean more) throws Exception {
+        this.begin_op(FLAG_M | FLAG_A, more);
+        this.absorb(data);
     }
 
-    /**
-     * // Check if we're continuing an operation
-     * if more {
-     * assert_eq!(
-     * self.cur_flags, flags,
-     * "You tried to continue op {:#b} but changed flags to {:#b}",
-     * self.cur_flags, flags,
-     * );
-     * return;
-     * }
-     * <p>
-     * // Skip adjusting direction information (we just use AD, PRF)
-     * assert_eq!(
-     * flags & FLAG_T,
-     * 0u8,
-     * "You used the T flag, which this implementation doesn't support"
-     * );
-     * <p>
-     * let old_begin = self.pos_begin;
-     * self.pos_begin = self.pos + 1;
-     * self.cur_flags = flags;
-     * <p>
-     * self.absorb(&[old_begin, flags]);
-     * <p>
-     * // Force running F if C or K is set
-     * let force_f = 0 != (flags & (FLAG_C | FLAG_K));
-     * <p>
-     * if force_f && self.pos != 0 {
-     * self.run_f();
-     * }
-     */
-    private void begin_op(int flags, boolean more) {
+    public void ad(byte[] data, boolean more) throws Exception {
+        this.begin_op(FLAG_A, more);
+        this.absorb(data);
+    }
+
+    public void prf(byte[] data, boolean more) throws Exception {
+        this.begin_op(FLAG_I | FLAG_A | FLAG_C, more);
+        this.squeeze(data);
+    }
+
+    public void key(byte[] data, boolean more) throws Exception {
+        this.begin_op(FLAG_I | FLAG_A | FLAG_C, more);
+        this.overwrite(data);
+    }
+
+
+    private void begin_op(int flags, boolean more) throws Exception {
         // Check if we're continuing an operation
         if (more) {
+            if (this.cur_flags != flags) {
+                throw new Exception("You tried to continue op " + this.cur_flags + " but changed flags to " + flags);
+            }
             return;
         }
+
+        // Skip adjusting direction information (we just use AD, PRF)
+        if ((flags & FLAG_T) != 0) {
+            throw new Exception("You used the T flag, which this implementation doesn't support");
+        }
+
         int old_begin = this.pos_begin;
         this.pos_begin = this.pos + 1;
         this.cur_flags = flags;
 
-        byte[] tmp = new byte[2];
-        tmp[0] = (byte) old_begin;
-        tmp[1] = (byte) flags;
+        byte[] tmp = {(byte) old_begin, (byte) flags};
         this.absorb(tmp);
 
         // Force running F if C or K is set
         boolean force_f = 0 != (flags & (FLAG_C | FLAG_K));
+
         if (force_f && this.pos != 0) {
             this.run_f();
         }
     }
 
-    /**
-     * fn absorb(&mut self, data: &[u8]) {
-     * for byte in data {
-     * self.state[self.pos as usize] ^= byte;
-     * self.pos += 1;
-     * if self.pos == STROBE_R {
-     * self.run_f();
-     * }
-     * }
-     */
     private void absorb(byte[] data) {
         for (int i = 0; i < data.length; i++) {
             this.state[this.pos] ^= data[i];
@@ -122,36 +99,15 @@ public class Strobe128 {
 
     }
 
-    /**
-     * fn run_f(&mut self) {
-     * self.state[self.pos as usize] ^= self.pos_begin;
-     * self.state[(self.pos + 1) as usize] ^= 0x04;
-     * self.state[(STROBE_R + 1) as usize] ^= 0x80;
-     * keccak::f1600(transmute_state(&mut self.state));
-     * self.pos = 0;
-     * self.pos_begin = 0;
-     * }
-     */
     private void run_f() {
         this.state[this.pos] ^= this.pos_begin;
         this.state[this.pos + 1] ^= 0x04;
         this.state[STROBE_R + 1] ^= 0x80;
-        this.state = runF(this.state, 128);
+        this.state = runF(this.state, 200);
         this.pos = 0;
         this.pos_begin = 0;
     }
 
-    /**
-     * fn overwrite(&mut self, data: &[u8]) {
-     * for byte in data {
-     * self.state[self.pos as usize] = *byte;
-     * self.pos += 1;
-     * if self.pos == STROBE_R {
-     * self.run_f();
-     * }
-     * }
-     * }
-     */
     private void overwrite(byte[] data) {
         for (int i = 0; i < data.length; i++) {
             this.state[this.pos] = data[i];
@@ -162,18 +118,6 @@ public class Strobe128 {
         }
     }
 
-    /**
-     * fn squeeze(&mut self, data: &mut [u8]) {
-     * for byte in data {
-     * *byte = self.state[self.pos as usize];
-     * self.state[self.pos as usize] = 0;
-     * self.pos += 1;
-     * if self.pos == STROBE_R {
-     * self.run_f();
-     * }
-     * }
-     * }
-     */
     private void squeeze(byte[] data) {
         for (int i = 0; i < data.length; i++) {
             data[i] = this.state[this.pos];
@@ -185,7 +129,6 @@ public class Strobe128 {
         }
     }
 
-
     private static byte[] initial_state(int security) {
         if (security != 128 && security != 256) {
             throw new IllegalArgumentException("strobe: security must be set to either 128 or 256");
@@ -196,7 +139,8 @@ public class Strobe128 {
         System.arraycopy(b1, 0, st, 0, b1.length);
         System.arraycopy(b2, 0, st, b1.length, b2.length);
 
-        st = runF(st, security);
+        int duplexRate = 1600 / 8 - security / 4;
+        st = runF(st, duplexRate);
         return st;
     }
 
@@ -206,8 +150,7 @@ public class Strobe128 {
      *
      * @return
      */
-    private static byte[] runF(byte[] buf, int security) {
-        int duplexRate = 1600 / 8 - security / 4;
+    private static byte[] runF(byte[] buf, int duplexRate) {
         byte[] storage = new byte[duplexRate];
         System.arraycopy(buf, 0, storage, 0, duplexRate);
         long[] state = NumberUtils.xorState(storage);
@@ -222,8 +165,16 @@ public class Strobe128 {
         return st;
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
+        Strobe128 strobe = createStrobe("Conformance Test Protocol".getBytes());
 
-        byte[] bytes = initial_state(128);
+        strobe.meta_ad("ms".getBytes(), false);
+        strobe.meta_ad("g".getBytes(), true);
+
+        byte[] msg = new byte[1024];
+        Arrays.fill(msg, (byte) 99);
+        strobe.ad(msg, false);
+
+        System.out.println(strobe);
     }
 }
