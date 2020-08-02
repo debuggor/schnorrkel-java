@@ -1,13 +1,9 @@
 package com.debuggor.schnorrkel;
 
-import cafe.cryptography.curve25519.Constants;
-import cafe.cryptography.curve25519.RistrettoElement;
-import cafe.cryptography.curve25519.RistrettoGeneratorTable;
-import cafe.cryptography.curve25519.Scalar;
+import cafe.cryptography.curve25519.*;
 import com.debuggor.utils.HexUtils;
 
 import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 
 /**
@@ -49,13 +45,29 @@ public class KeyPair {
         return fromSecretSeed(seed);
     }
 
-    public byte[] sign(byte[] data) {
+    public Signature sign(byte[] data) {
         try {
-            MessageDigest digest = MessageDigest.getInstance("SHA-512");
-        } catch (NoSuchAlgorithmException e) {
+            SigningContext ctx = SigningContext.createSigningContext("".getBytes());
+            SigningTranscript t = ctx.bytes(data);
+
+            t.proto_name("Schnorr-sig".getBytes());
+            t.commit_point("pk".getBytes(), publicKey.getCompressedRistretto());
+
+            // context, message, A/public_key
+            Scalar r = t.witness_scalar("".getBytes(), privateKey.getNonce());
+            CompressedRistretto R = ristrettoTable.multiply(r).compress();
+            t.commit_point("sign:R".getBytes(), R);
+
+            // context, message, A/public_key, R=rG
+            Scalar k = t.challenge_scalar("sign:c".getBytes());
+
+            Scalar key = Scalar.fromBits(privateKey.getKey());
+            Scalar s = k.multiplyAndAdd(key, r);
+            r = Scalar.ZERO;
+            return new Signature(R, s);
+        } catch (Exception e) {
             e.printStackTrace();
         }
-
         return null;
     }
 

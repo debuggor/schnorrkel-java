@@ -8,12 +8,16 @@ import com.debuggor.utils.NumberUtils;
  */
 public class Transcript {
 
-    private Strobe128 strobe;
+    protected Strobe128 strobe;
 
     private static byte[] MERLIN_PROTOCOL_LABEL = "Merlin v1.0".getBytes();
 
     public Transcript(Strobe128 strobe128) {
         this.strobe = strobe128;
+    }
+
+    public Strobe128 getStrobe() {
+        return strobe;
     }
 
     public static Transcript createTranscript(byte[] label) throws Exception {
@@ -89,6 +93,9 @@ public class Transcript {
      * }
      * }
      */
+    public TranscriptRngBuilder build_rng() {
+        return new TranscriptRngBuilder(this.strobe);
+    }
 
     public static void main(String[] args) throws Exception {
         Transcript transcript = Transcript.createTranscript("test protocol".getBytes());

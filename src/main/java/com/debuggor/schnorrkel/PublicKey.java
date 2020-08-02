@@ -21,4 +21,12 @@ public class PublicKey {
     public byte[] toPublicKey() {
         return compressedRistretto.toByteArray();
     }
+
+    public RistrettoElement getRistretto() {
+        return ristretto;
+    }
+
+    public CompressedRistretto getCompressedRistretto() {
+        return compressedRistretto;
+    }
 }
