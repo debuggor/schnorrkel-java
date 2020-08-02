@@ -103,7 +103,7 @@ public class Strobe128 {
         this.state[this.pos] ^= this.pos_begin;
         this.state[this.pos + 1] ^= 0x04;
         this.state[STROBE_R + 1] ^= 0x80;
-        this.state = runF(this.state, 200);
+        this.state = transmute_state(this.state, 200);
         this.pos = 0;
         this.pos_begin = 0;
     }
@@ -140,7 +140,7 @@ public class Strobe128 {
         System.arraycopy(b2, 0, st, b1.length, b2.length);
 
         int duplexRate = 1600 / 8 - security / 4;
-        st = runF(st, duplexRate);
+        st = transmute_state(st, duplexRate);
         return st;
     }
 
@@ -150,7 +150,7 @@ public class Strobe128 {
      *
      * @return
      */
-    private static byte[] runF(byte[] buf, int duplexRate) {
+    private static byte[] transmute_state(byte[] buf, int duplexRate) {
         byte[] storage = new byte[duplexRate];
         System.arraycopy(buf, 0, storage, 0, duplexRate);
         long[] state = NumberUtils.xorState(storage);
@@ -167,10 +167,8 @@ public class Strobe128 {
 
     public static void main(String[] args) throws Exception {
         Strobe128 strobe = createStrobe("Conformance Test Protocol".getBytes());
-
         strobe.meta_ad("ms".getBytes(), false);
         strobe.meta_ad("g".getBytes(), true);
-
         byte[] msg = new byte[1024];
         Arrays.fill(msg, (byte) 99);
         strobe.ad(msg, false);

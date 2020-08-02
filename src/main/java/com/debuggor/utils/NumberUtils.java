@@ -43,6 +43,24 @@ public class NumberUtils {
     }
 
 
+    public static void uint32ToBytes(int val, byte[] out, int offset) {
+        out[offset] = (byte) ((int) (255L & val));
+        out[offset + 1] = (byte) ((int) (255L & val >> 8));
+        out[offset + 2] = (byte) ((int) (255L & val >> 16));
+        out[offset + 3] = (byte) ((int) (255L & val >> 24));
+    }
+
+    public static void uint64ToBytes(long val, byte[] out, int offset) {
+        out[offset] = (byte) ((int) (255L & val));
+        out[offset + 1] = (byte) ((int) (255L & val >> 8));
+        out[offset + 2] = (byte) ((int) (255L & val >> 16));
+        out[offset + 3] = (byte) ((int) (255L & val >> 24));
+        out[offset + 4] = (byte) ((int) (255L & val >> 32));
+        out[offset + 5] = (byte) ((int) (255L & val >> 40));
+        out[offset + 6] = (byte) ((int) (255L & val >> 48));
+        out[offset + 7] = (byte) ((int) (255L & val >> 56));
+    }
+
     public static void main(String[] args) {
         byte[] st = new byte[168];
         byte[] b1 = {1, (byte) 168, 1, 0, 1, 96};
