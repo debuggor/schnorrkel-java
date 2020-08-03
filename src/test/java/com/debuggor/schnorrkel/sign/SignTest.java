@@ -1,6 +1,6 @@
-package com.debuggor.schnorrkel;
+package com.debuggor.schnorrkel.sign;
 
-import com.debuggor.utils.HexUtils;
+import com.debuggor.schnorrkel.utils.HexUtils;
 
 /**
  * @Author:yong.huang

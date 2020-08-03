@@ -1,11 +1,11 @@
-package com.debuggor.schnorrkel;
+package com.debuggor.schnorrkel.sign;
 
 import cafe.cryptography.curve25519.CompressedRistretto;
 import cafe.cryptography.curve25519.Scalar;
-import com.debuggor.merlin.Strobe128;
-import com.debuggor.merlin.Transcript;
-import com.debuggor.merlin.TranscriptRng;
-import com.debuggor.merlin.TranscriptRngBuilder;
+import com.debuggor.schnorrkel.merlin.Strobe128;
+import com.debuggor.schnorrkel.merlin.Transcript;
+import com.debuggor.schnorrkel.merlin.TranscriptRng;
+import com.debuggor.schnorrkel.merlin.TranscriptRngBuilder;
 
 /**
  * @Author:yong.huang

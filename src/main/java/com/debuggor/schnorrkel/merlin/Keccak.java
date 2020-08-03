@@ -1,4 +1,4 @@
-package com.debuggor.merlin;
+package com.debuggor.schnorrkel.merlin;
 
 /**
  * https://github.com/jrmelsha/keccak/blob/master/src/main/java/com/joemelsha/crypto/hash/Keccak.java#L365

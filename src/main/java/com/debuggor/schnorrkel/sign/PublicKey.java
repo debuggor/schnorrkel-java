@@ -1,4 +1,4 @@
-package com.debuggor.schnorrkel;
+package com.debuggor.schnorrkel.sign;
 
 import cafe.cryptography.curve25519.CompressedRistretto;
 import cafe.cryptography.curve25519.RistrettoElement;

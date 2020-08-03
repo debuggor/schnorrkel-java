@@ -1,6 +1,6 @@
-package com.debuggor.schnorrkel;
+package com.debuggor.schnorrkel.sign;
 
-import com.debuggor.utils.ScalarUtils;
+import com.debuggor.schnorrkel.utils.ScalarUtils;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;

@@ -1,4 +1,4 @@
-package com.debuggor.utils;
+package com.debuggor.schnorrkel.utils;
 
 /**
  * Scalar tooling

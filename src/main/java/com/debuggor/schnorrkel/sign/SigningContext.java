@@ -1,6 +1,6 @@
-package com.debuggor.schnorrkel;
+package com.debuggor.schnorrkel.sign;
 
-import com.debuggor.merlin.Transcript;
+import com.debuggor.schnorrkel.merlin.Transcript;
 
 /**
  * @Author:yong.huang

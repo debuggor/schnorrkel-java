@@ -1,6 +1,6 @@
-package com.debuggor.merlin;
+package com.debuggor.schnorrkel.merlin;
 
-import com.debuggor.utils.NumberUtils;
+import com.debuggor.schnorrkel.utils.NumberUtils;
 
 /**
  * @Author:yong.huang

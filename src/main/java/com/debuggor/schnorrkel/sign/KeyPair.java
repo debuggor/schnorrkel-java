@@ -1,7 +1,7 @@
-package com.debuggor.schnorrkel;
+package com.debuggor.schnorrkel.sign;
 
 import cafe.cryptography.curve25519.*;
-import com.debuggor.utils.HexUtils;
+import com.debuggor.schnorrkel.utils.HexUtils;
 
 import java.security.SecureRandom;
 
