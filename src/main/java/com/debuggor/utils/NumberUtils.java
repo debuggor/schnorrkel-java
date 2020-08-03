@@ -1,7 +1,5 @@
 package com.debuggor.utils;
 
-import com.debuggor.merlin.Keccak;
-
 /**
  * @Author:yong.huang
  * @Date:2020-08-01 00:23
@@ -59,28 +57,6 @@ public class NumberUtils {
         out[offset + 5] = (byte) ((int) (255L & val >> 40));
         out[offset + 6] = (byte) ((int) (255L & val >> 48));
         out[offset + 7] = (byte) ((int) (255L & val >> 56));
-    }
-
-    public static void main(String[] args) {
-        byte[] st = new byte[168];
-        byte[] b1 = {1, (byte) 168, 1, 0, 1, 96};
-        byte[] b2 = "STROBEv1.0.2".getBytes();
-
-        System.arraycopy(b1, 0, st, 0, 6);
-        System.arraycopy(b2, 0, st, 6, b2.length);
-
-        long[] longs = xorState(st);
-
-        Keccak.f1600(longs);
-
-        byte[] bytes = new byte[200];
-        int offset = 0;
-        for (int i = 0; i < longs.length; i++) {
-            int64ToBytes(longs[i], bytes, offset);
-            offset += 8;
-        }
-
-        System.out.println(bytes);
     }
 
 }

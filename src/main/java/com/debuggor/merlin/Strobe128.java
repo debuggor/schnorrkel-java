@@ -174,16 +174,4 @@ public class Strobe128 implements Cloneable {
         System.arraycopy(this.state, 0, strobe.state, 0, this.state.length);
         return strobe;
     }
-
-
-    public static void main(String[] args) throws Exception {
-        Strobe128 strobe = createStrobe("Conformance Test Protocol".getBytes());
-        strobe.meta_ad("ms".getBytes(), false);
-        strobe.meta_ad("g".getBytes(), true);
-        byte[] msg = new byte[1024];
-        Arrays.fill(msg, (byte) 99);
-        strobe.ad(msg, false);
-
-        System.out.println(strobe);
-    }
 }

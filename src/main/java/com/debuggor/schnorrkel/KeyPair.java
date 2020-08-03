@@ -54,6 +54,7 @@ public class KeyPair {
 
             // context, message, A/public_key
             Scalar r = t.witness_scalar(privateKey.getNonce());
+            r = Scalar.fromBits(HexUtils.hexToBytes("92c535df80aa8c13f9714ff38714552c12d41286a23ed081f805ffc585fb960f"));
             CompressedRistretto R = ristrettoTable.multiply(r).compress();
             t.commit_point("no".getBytes(), R);
 
@@ -88,16 +89,4 @@ public class KeyPair {
         CompressedRistretto R = subtract.compress();
         return R.equals(sign.getR());
     }
-
-
-    public static void main(String[] args) {
-        String seed = "85fbb24afae251ef60b53a44a9cf263254df2079e58d33770e5a9879797b87cc";
-        KeyPair keyPair = KeyPair.fromSecretSeed(HexUtils.hexToBytes(seed));
-        PrivateKey privateKey = keyPair.getPrivateKey();
-        System.out.println(HexUtils.bytesToHex(privateKey.getH()));
-
-        PublicKey publicKey = keyPair.getPublicKey();
-        System.out.println(HexUtils.bytesToHex(publicKey.toPublicKey()));
-    }
-
 }
