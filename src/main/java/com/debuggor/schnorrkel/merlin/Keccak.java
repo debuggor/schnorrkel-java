@@ -111,15 +111,4 @@ public class Keccak {
             0x8000000000008003L, 0x8000000000008002L, 0x8000000000000080L, 0x000000000000800AL, 0x800000008000000AL,
             0x8000000080008081L, 0x8000000000008080L, 0x0000000080000001L, 0x8000000080008008L};
 
-    public static void main(String[] args) {
-        long[] longs = new long[25];
-        longs[0] = 6076305879664273409L;
-        longs[1] = 3471766746787106642L;
-        longs[2] = 12846L;
-        Keccak.f1600(longs);
-        System.out.println(longs);
-
-        // todo 将long转为8位byte
-
-    }
 }

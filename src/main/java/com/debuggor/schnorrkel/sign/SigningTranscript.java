@@ -28,7 +28,6 @@ public class SigningTranscript extends Transcript {
     public Scalar witness_scalar(byte[] nonce_seeds) throws Exception {
         byte[] scalar_bytes = new byte[64];
         this.witness_bytes(scalar_bytes, nonce_seeds);
-        // fromBytesModOrderWide
         Scalar scalar = Scalar.fromBytesModOrderWide(scalar_bytes);
         return scalar;
     }
