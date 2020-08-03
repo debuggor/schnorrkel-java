@@ -83,11 +83,9 @@ public class KeyPair {
         // context, message, A/public_key, R=rG
         Scalar k = t.challenge_scalar("".getBytes());
 
-        CompressedEdwardsY ristretto = new CompressedEdwardsY(publicKey.toPublicKey());
-        EdwardsPoint decompress = ristretto.decompress();
-        EdwardsPoint point = EdwardsPoint.vartimeDoubleScalarMultiplyBasepoint(k, decompress, sign.getS());
-
-        CompressedRistretto R = new CompressedRistretto(point.compress().toByteArray());
+        RistrettoElement publicPoint = publicKey.getRistretto();
+        RistrettoElement subtract = ristrettoTable.multiply(sign.getS()).subtract(publicPoint.multiply(k));
+        CompressedRistretto R = subtract.compress();
         return R.equals(sign.getR());
     }
 

@@ -41,7 +41,7 @@ public class Signature {
         byte[] sBytes = s.toByteArray();
         System.arraycopy(rBytes, 0, bytes, 0, 32);
         System.arraycopy(sBytes, 0, bytes, 32, 32);
-        bytes[63] |= 128;
+       // bytes[63] |= 128;
         return bytes;
     }
 
@@ -75,11 +75,8 @@ public class Signature {
         byte[] upper = new byte[32];
         System.arraycopy(bytes, 0, lower, 0, 32);
         System.arraycopy(bytes, 32, upper, 0, 32);
-        if ((upper[31] & 128) == 0) {
-            throw new Exception(" Signature not marked as schnorrkel, maybe try ed25519 instead");
-        }
-        upper[31] &= 127;
-        return new Signature(new CompressedRistretto(lower), Scalar.fromBits(upper));
+
+        return new Signature(new CompressedRistretto(lower), Scalar.fromCanonicalBytes(upper));
     }
 
 }
