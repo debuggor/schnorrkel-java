@@ -94,7 +94,8 @@ public class Transcript {
      * }
      */
     public TranscriptRngBuilder build_rng() {
-        return new TranscriptRngBuilder(this.strobe);
+        Strobe128 strobe = this.strobe.clone();
+        return new TranscriptRngBuilder(strobe);
     }
 
     public static void main(String[] args) throws Exception {

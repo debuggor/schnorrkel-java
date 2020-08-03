@@ -8,7 +8,7 @@ import java.util.Arrays;
  * @Author:yong.huang
  * @Date:2020-07-31 17:23
  */
-public class Strobe128 {
+public class Strobe128 implements Cloneable {
 
     private byte[] state;
     private int pos;
@@ -164,6 +164,21 @@ public class Strobe128 {
         }
         return st;
     }
+
+    @Override
+    public Strobe128 clone() {
+        try {
+            Strobe128 strobe = (Strobe128) super.clone();
+            strobe.cur_flags = this.cur_flags;
+            strobe.pos = this.pos;
+            strobe.pos_begin = this.pos_begin;
+            strobe.state = this.state;
+            return strobe;
+        } catch (CloneNotSupportedException e) {
+            return null;
+        }
+    }
+
 
     public static void main(String[] args) throws Exception {
         Strobe128 strobe = createStrobe("Conformance Test Protocol".getBytes());

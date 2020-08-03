@@ -18,6 +18,14 @@ public class Signature {
         this.s = s;
     }
 
+    public CompressedRistretto getR() {
+        return R;
+    }
+
+    public Scalar getS() {
+        return s;
+    }
+
     /**
      * pub fn to_bytes(&self) -> [u8; SIGNATURE_LENGTH] {
      * let mut bytes: [u8; SIGNATURE_LENGTH] = [0u8; SIGNATURE_LENGTH];

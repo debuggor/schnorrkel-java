@@ -3,7 +3,6 @@ package com.debuggor.schnorrkel;
 import cafe.cryptography.curve25519.*;
 import com.debuggor.utils.HexUtils;
 
-import java.security.MessageDigest;
 import java.security.SecureRandom;
 
 /**
@@ -54,12 +53,12 @@ public class KeyPair {
             t.commit_point("pk".getBytes(), publicKey.getCompressedRistretto());
 
             // context, message, A/public_key
-            Scalar r = t.witness_scalar("".getBytes(), privateKey.getNonce());
+            Scalar r = t.witness_scalar(privateKey.getNonce());
             CompressedRistretto R = ristrettoTable.multiply(r).compress();
-            t.commit_point("sign:R".getBytes(), R);
+            t.commit_point("no".getBytes(), R);
 
             // context, message, A/public_key, R=rG
-            Scalar k = t.challenge_scalar("sign:c".getBytes());
+            Scalar k = t.challenge_scalar("".getBytes());
 
             Scalar key = Scalar.fromBits(privateKey.getKey());
             Scalar s = k.multiplyAndAdd(key, r);
@@ -71,8 +70,25 @@ public class KeyPair {
         return null;
     }
 
-    public boolean verify(byte[] data, byte[] signature) {
-        return false;
+    public boolean verify(byte[] data, byte[] signature) throws Exception {
+        Signature sign = Signature.from_bytes(signature);
+
+        SigningContext ctx = SigningContext.createSigningContext("".getBytes());
+        SigningTranscript t = ctx.bytes(data);
+
+        t.proto_name("Schnorr-sig".getBytes());
+        t.commit_point("pk".getBytes(), publicKey.getCompressedRistretto());
+        t.commit_point("no".getBytes(), sign.getR());
+
+        // context, message, A/public_key, R=rG
+        Scalar k = t.challenge_scalar("".getBytes());
+
+        CompressedEdwardsY ristretto = new CompressedEdwardsY(publicKey.toPublicKey());
+        EdwardsPoint decompress = ristretto.decompress();
+        EdwardsPoint point = EdwardsPoint.vartimeDoubleScalarMultiplyBasepoint(k, decompress, sign.getS());
+
+        CompressedRistretto R = new CompressedRistretto(point.compress().toByteArray());
+        return R.equals(sign.getR());
     }
 
 

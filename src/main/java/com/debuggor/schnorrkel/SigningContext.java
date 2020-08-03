@@ -22,8 +22,7 @@ public class SigningContext {
      * }
      */
     public static SigningContext createSigningContext(byte[] context) throws Exception {
-        Transcript transcript = Transcript.createTranscript("SigningContext".getBytes());
-        transcript.append_message("".getBytes(), context);
+        Transcript transcript = Transcript.createTranscript(context);
         return new SigningContext(transcript);
     }
 
