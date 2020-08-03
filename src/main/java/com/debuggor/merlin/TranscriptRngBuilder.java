@@ -77,6 +77,6 @@ public class TranscriptRngBuilder {
         random.nextBytes(random_bytes);
         this.strobe.meta_ad("rng".getBytes(), false);
         this.strobe.key(random_bytes, false);
-        return new TranscriptRng(this.strobe);
+        return new TranscriptRng(this.strobe.clone());
     }
 }

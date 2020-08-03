@@ -54,7 +54,7 @@ public class Strobe128 implements Cloneable {
     }
 
     public void key(byte[] data, boolean more) throws Exception {
-        this.begin_op(FLAG_I | FLAG_A | FLAG_C, more);
+        this.begin_op(FLAG_A | FLAG_C, more);
         this.overwrite(data);
     }
 
@@ -167,16 +167,12 @@ public class Strobe128 implements Cloneable {
 
     @Override
     public Strobe128 clone() {
-        try {
-            Strobe128 strobe = (Strobe128) super.clone();
-            strobe.cur_flags = this.cur_flags;
-            strobe.pos = this.pos;
-            strobe.pos_begin = this.pos_begin;
-            strobe.state = this.state;
-            return strobe;
-        } catch (CloneNotSupportedException e) {
-            return null;
-        }
+        Strobe128 strobe = new Strobe128(new byte[200]);
+        strobe.cur_flags = this.cur_flags;
+        strobe.pos = this.pos;
+        strobe.pos_begin = this.pos_begin;
+        System.arraycopy(this.state, 0, strobe.state, 0, this.state.length);
+        return strobe;
     }
 
 
