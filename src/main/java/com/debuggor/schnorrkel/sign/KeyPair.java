@@ -31,8 +31,8 @@ public class KeyPair {
         return privateKey;
     }
 
-    public static KeyPair fromSecretSeed(byte[] seed) {
-        PrivateKey privateKey = new PrivateKey(seed);
+    public static KeyPair fromSecretSeed(byte[] seed, ExpansionMode mode) {
+        PrivateKey privateKey = new PrivateKey(seed, mode);
         byte[] key = privateKey.getKey();
         RistrettoElement ristretto = ristrettoTable.multiply(Scalar.fromBits(key));
         PublicKey publicKey = new PublicKey(ristretto);
@@ -43,7 +43,7 @@ public class KeyPair {
         SecureRandom random = new SecureRandom();
         byte[] seed = new byte[32];
         random.nextBytes(seed);
-        return fromSecretSeed(seed);
+        return fromSecretSeed(seed, ExpansionMode.Ed25519);
     }
 
     public Signature sign(byte[] data) throws Exception {

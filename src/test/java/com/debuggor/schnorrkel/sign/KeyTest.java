@@ -10,8 +10,8 @@ import com.debuggor.schnorrkel.utils.HexUtils;
 public class KeyTest {
 
     public static void main(String[] args) {
-        byte[] seed = HexUtils.hexToBytes("882749e4a5738ba59e7e25b2cd66c41c9037c4950e3a0cd18846df9814a33d79");
-        KeyPair keyPair = KeyPair.fromSecretSeed(seed);
+        byte[] seed = HexUtils.hexToBytes("579d7aa286b37b800b95fe41adabbf0c2a577caf2854baeca98f8fb242ff43ae");
+        KeyPair keyPair = KeyPair.fromSecretSeed(seed, ExpansionMode.Ed25519);
         PrivateKey privateKey = keyPair.getPrivateKey();
         PublicKey publicKey = keyPair.getPublicKey();
 

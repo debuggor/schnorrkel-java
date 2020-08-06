@@ -1,5 +1,7 @@
 package com.debuggor.schnorrkel.sign;
 
+import cafe.cryptography.curve25519.Scalar;
+import com.debuggor.schnorrkel.merlin.Transcript;
 import com.debuggor.schnorrkel.utils.ScalarUtils;
 
 import java.security.MessageDigest;
@@ -17,12 +19,33 @@ public class PrivateKey {
     private byte[] nonce;
     private byte[] h;
 
-    public PrivateKey(byte[] seed) {
+    public PrivateKey(byte[] seed, ExpansionMode mode) {
         this.seed = seed;
-        hashSeed(seed);
+        if (mode != null && mode.equals(ExpansionMode.Ed25519)) {
+            expand_ed25519(seed);
+        } else {
+            expand_uniform(seed);
+        }
     }
 
-    private void hashSeed(byte[] seed) {
+
+    private void expand_uniform(byte[] seed) {
+        try {
+            Transcript t = Transcript.createTranscript("ExpandSecretKeys".getBytes());
+            t.append_message("mini".getBytes(), seed);
+            byte[] scalar_bytes = new byte[64];
+            t.challenge_bytes("sk".getBytes(), scalar_bytes);
+            Scalar scalar = Scalar.fromBytesModOrderWide(scalar_bytes);
+            key = scalar.toByteArray();
+            nonce = new byte[32];
+            t.challenge_bytes("no".getBytes(), nonce);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    private void expand_ed25519(byte[] seed) {
         try {
             MessageDigest hash = MessageDigest.getInstance("SHA-512");
             h = hash.digest(seed);

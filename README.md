@@ -3,7 +3,7 @@
 
 Java implementation of the sr25519 signature algorithm (schnorr over ristretto25519). The existing rust implementation is [here](https://github.com/w3f/schnorrkel).
 
-This library is currently able to create sr25519 keys, import sr25519 keys, and sign and verify messages. This version corresponds to [schnorrkel 0.1.1](https://docs.rs/schnorrkel/0.1.1/schnorrkel/)
+This library is currently able to create sr25519 keys, import sr25519 keys, and sign and verify messages. 
 
 
 ### usage
