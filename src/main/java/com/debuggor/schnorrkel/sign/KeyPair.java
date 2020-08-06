@@ -46,20 +46,17 @@ public class KeyPair {
         return fromSecretSeed(seed, ExpansionMode.Ed25519);
     }
 
-    public Signature sign(byte[] data) throws Exception {
-        SigningContext ctx = SigningContext.createSigningContext(CTX);
-        SigningTranscript t = ctx.bytes(data);
-
+    public Signature sign(SigningTranscript t) throws Exception {
         t.proto_name("Schnorr-sig".getBytes());
-        t.commit_point("pk".getBytes(), publicKey.getCompressedRistretto());
+        t.commit_point("sign:pk".getBytes(), publicKey.getCompressedRistretto());
 
         // context, message, A/public_key
-        Scalar r = t.witness_scalar(privateKey.getNonce());
+        Scalar r = t.witness_scalar("signing".getBytes(), privateKey.getNonce());
         CompressedRistretto R = ristrettoTable.multiply(r).compress();
-        t.commit_point("no".getBytes(), R);
+        t.commit_point("sign:R".getBytes(), R);
 
         // context, message, A/public_key, R=rG
-        Scalar k = t.challenge_scalar("".getBytes());
+        Scalar k = t.challenge_scalar("sign:c".getBytes());
 
         Scalar key = Scalar.fromBits(privateKey.getKey());
         Scalar s = k.multiplyAndAdd(key, r);
@@ -74,18 +71,14 @@ public class KeyPair {
         return new KeyPair(publicKey, null);
     }
 
-    public boolean verify(byte[] data, byte[] signature) throws Exception {
+    public boolean verify(SigningTranscript t, byte[] signature) throws Exception {
         Signature sign = Signature.from_bytes(signature);
-
-        SigningContext ctx = SigningContext.createSigningContext(CTX);
-        SigningTranscript t = ctx.bytes(data);
-
         t.proto_name("Schnorr-sig".getBytes());
-        t.commit_point("pk".getBytes(), publicKey.getCompressedRistretto());
-        t.commit_point("no".getBytes(), sign.getR());
+        t.commit_point("sign:pk".getBytes(), publicKey.getCompressedRistretto());
+        t.commit_point("sign:R".getBytes(), sign.getR());
 
         // context, message, A/public_key, R=rG
-        Scalar k = t.challenge_scalar("".getBytes());
+        Scalar k = t.challenge_scalar("sign:c".getBytes());
 
         RistrettoElement publicPoint = publicKey.getRistretto();
         RistrettoElement subtract = ristrettoTable.multiply(sign.getS()).subtract(publicPoint.multiply(k));

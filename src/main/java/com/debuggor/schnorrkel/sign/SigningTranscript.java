@@ -25,20 +25,20 @@ public class SigningTranscript extends Transcript {
         this.commit_bytes(label, compressed.toByteArray());
     }
 
-    public Scalar witness_scalar(byte[] nonce_seeds) throws Exception {
+    public Scalar witness_scalar(byte[] label, byte[] nonce_seeds) throws Exception {
         byte[] scalar_bytes = new byte[64];
-        this.witness_bytes(scalar_bytes, nonce_seeds);
+        this.witness_bytes(label, scalar_bytes, nonce_seeds);
         Scalar scalar = Scalar.fromBytesModOrderWide(scalar_bytes);
         return scalar;
     }
 
-    public void witness_bytes(byte[] dest, byte[] nonce_seeds) throws Exception {
-        this.witness_bytes_rng(dest, nonce_seeds);
+    public void witness_bytes(byte[] label, byte[] dest, byte[] nonce_seeds) throws Exception {
+        this.witness_bytes_rng(label, dest, nonce_seeds);
     }
 
-    public void witness_bytes_rng(byte[] dest, byte[] nonce_seeds) throws Exception {
+    public void witness_bytes_rng(byte[] label, byte[] dest, byte[] nonce_seeds) throws Exception {
         TranscriptRngBuilder br = build_rng();
-        br = br.commit_witness_bytes("".getBytes(), nonce_seeds);
+        br = br.commit_witness_bytes(label, nonce_seeds);
         TranscriptRng r = br.tFinalize();
         r.fill_bytes(dest);
     }

@@ -15,8 +15,9 @@ public class SigningContext {
     }
 
     public static SigningContext createSigningContext(byte[] context) throws Exception {
-        Transcript transcript = Transcript.createTranscript(context);
-        return new SigningContext(transcript);
+        Transcript t = Transcript.createTranscript("SigningContext".getBytes());
+        t.append_message("".getBytes(), context);
+        return new SigningContext(t);
     }
 
     public SigningTranscript bytes(byte[] bytes) throws Exception {
