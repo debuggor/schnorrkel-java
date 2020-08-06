@@ -16,16 +16,20 @@ import com.debuggor.schnorrkel.utils.HexUtils;
 public class SignTest {
 
     public static void main(String[] args) throws Exception {
-        KeyPair keyPair = KeyPair.fromSecretSeed(HexUtils.hexToBytes("579d7aa286b37b800b95fe41adabbf0c2a577caf2854baeca98f8fb242ff43ae"));
+        KeyPair keyPair = KeyPair.fromSecretSeed(HexUtils.hexToBytes("579d7aa286b37b800b95fe41adabbf0c2a577caf2854baeca98f8fb242ff43ae"), ExpansionMode.Ed25519);
 
-        String payload = "000400ffa6158c2b928d5d495922366ad9b4339a023366b322fb22f4db12751e0ea93f5ca10fa50300005ffdae0956deb76e40b94af6e990717a7f8956a1920007739ff4b901f386";
-        byte[] message = HexUtils.hexToBytes(payload);
-        Signature signature = keyPair.sign(message);
+        byte[] message = "test message".getBytes();
+        SigningContext ctx = SigningContext.createSigningContext("good".getBytes());
+        SigningTranscript t = ctx.bytes(message);
+        Signature signature = keyPair.sign(t);
         byte[] sign = signature.to_bytes();
         System.out.println(HexUtils.bytesToHex(sign));
 
+
+        SigningContext ctx2 = SigningContext.createSigningContext("good".getBytes());
+        SigningTranscript t2 = ctx2.bytes(message);
         KeyPair fromPublicKey = KeyPair.fromPublicKey(keyPair.getPublicKey().toPublicKey());
-        boolean verify = fromPublicKey.verify(message, sign);
+        boolean verify = fromPublicKey.verify(t2, sign);
         System.out.println(verify);
     }
 }
